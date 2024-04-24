@@ -1,7 +1,7 @@
 # DECO3850 - Interstellar
 
 ## Introduction
-The purpose of this project is to work through the principles of physical computing and so to develop a mixed reality program about astronomy. This program supports the recognition of human gestures as well as body movements and also reads data from sensors. Virtual modelling was using Unity as a modelling tool while physical modelling was using fusion 360 as a modelling tool. Moreover, code libraries such as OpenVC, Mediapipe, and Sket were used to implement real-time tracking and recognition of human gestures and body movements.
+The purpose of this project is to work through the principles of physical computing and so to develop a mixed reality program about astronomy. This program supports the recognition of human gestures as well as body movements and also reads data from sensors. Virtual modelling was using Unity as a modelling tool while physical modelling was using fusion 360 as a modelling tool. Moreover, code libraries such as OpenVC, Mediapipe, and Sket were used to implement real-time tracking and recognition of human gestures and body movements. Physical modelling includes the modelling of the dodecahedral stone and the Arduino circuit playground express (CPE) sensor mounted within it.
 
 ## Usage
 1. `$ pip install numpy`
