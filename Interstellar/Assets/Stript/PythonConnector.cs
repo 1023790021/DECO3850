@@ -93,57 +93,25 @@ public class PythonConnector : MonoBehaviour
 
     void ProcessReceivedData(string data)
     {
-        // Find the astronaut GameObject
-        GameObject astronaut = GameObject.Find("Stylized Astronaut");
-
-        if (astronaut != null)
+        UnityMainThreadDispatcher.Instance().Enqueue(() =>
         {
-            // Get the AstronautController component
-            AstronautController astronautController = astronaut.GetComponent<AstronautController>();
-            
-            if (astronautController != null)
+            GameObject astronaut = GameObject.Find("Stylized Astronaut");
+            if (astronaut != null)
             {
-                // Call the RotateAstronaut method
-                astronautController.RotateAstronaut(data);
-
-                // Log the gesture control
-                if (data == "left")
+                AstronautController astronautController = astronaut.GetComponent<AstronautController>();
+                if (astronautController != null)
                 {
-                    Debug.Log("Movement to the left detected");
-                }
-                else if (data == "right")
-                {
-                    Debug.Log("Movement to the right detected");
-                }
-                else if (data == "walk")
-                {
-                    Debug.Log("Walking motion detected");
-                }
-                else if (data == "jump")
-                {
-                    Debug.Log("Jumping motion detected");
-                }
-                else if (data == "pickup")
-                {
-                    Debug.Log("Picking motion detected");
-                }
-                else if (data == "putdown")
-                {
-                    Debug.Log("Picking motion detected");
+                    astronautController.RotateAstronaut(data.Trim());
                 }
                 else
                 {
-                    Debug.Log("Gesture control detected: " + data);
+                    Debug.LogError("No AstronautController attached to the Player GameObject.");
                 }
             }
             else
             {
-                Debug.LogError("No AstronautController attached to the Player GameObject.");
+                Debug.LogError("No GameObject named 'Stylized Astronaut' found in the scene.");
             }
-        }
-        else
-        {
-            Debug.LogError("No GameObject found in the scene.");
-        }
+        });
     }
 }

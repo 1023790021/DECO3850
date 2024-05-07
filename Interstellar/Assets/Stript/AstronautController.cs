@@ -4,17 +4,18 @@ using UnityEngine;
 
 public class AstronautController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // Movement speed
     public float rotateSpeed = 100f; // Rotation speed
-    public float jumpForce = 10f; // Jump speed
+    public float moveSpeed = 5f; // Movement speed
+    public float jumpForce = 30f; // Jump speed
     public float gravity = 1.62f; // Gravity setting
     public float groundDistance = 0.3f;
     public float pickupRange = 2f;
+
     private Rigidbody rb; // Rigidbody component
+    public Transform handTransform; // Hand transform
+    public GameObject Model; // Model object
+    public Animator animator; // Animator component
     private bool isGrounded; // Grounded flag
-    public Transform handTransform;
-    public GameObject Model;
-    public Animator animator;
 
 
     void Start()
@@ -57,6 +58,16 @@ public class AstronautController : MonoBehaviour
         // Rotate the astronaut based on horizontal input
         transform.Rotate(0f, horizontalInput * rotateSpeed * Time.deltaTime, 0f);
         
+        // Rotate the astronaut based on horizontal input
+        if (horizontalInput < 0)
+        {
+            TurnLeft();
+        }
+        else if (horizontalInput > 0)
+        {
+            TurnRight();
+        }
+
         // Check if the jump key was pressed
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
@@ -155,43 +166,29 @@ public class AstronautController : MonoBehaviour
 
     public void RotateAstronaut(string command)
     {
+        Debug.Log("Command received: " + command); // 日志记录接收到的命令
         switch (command)
         {
-            case "left":
-                if (isGrounded)
-                {
-                    TurnLeft();
-                }
+            case "Turning Left":
+                if (isGrounded) TurnLeft();
                 break;
-            case "right":
-                if (isGrounded)
-                {
-                    TurnRight();
-                }
+            case "Turning Right":
+                if (isGrounded) TurnRight();
                 break;
-            case "walk":
-                if (isGrounded)
-                {
-                    Walk();
-                }
+            case "Walking":
+                if (isGrounded) Walk();
                 break;
-            case "jump":
-                if (isGrounded)
-                {
-                    Jump();
-                }
+            case "Jumping":
+                if (isGrounded) Jump();
                 break;
             case "pickup":
-                if (isGrounded)
-                {
-                    PickObject();
-                }
+                if (isGrounded) PickObject();
                 break;
             case "putdown":
-                if (isGrounded)
-                {
-                    DropObject();
-                }
+                if (isGrounded) DropObject();
+                break;
+            default:
+                Debug.LogError("Unrecognized command: " + command); // 未识别的命令错误日志
                 break;
         }
     }
