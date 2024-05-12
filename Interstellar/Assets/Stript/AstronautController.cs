@@ -8,7 +8,7 @@ public class AstronautController : MonoBehaviour
     public float moveSpeed = 5f; // Movement speed
     public float jumpForce = 30f; // Jump speed
     public float gravity = 1.62f; // Gravity setting
-    public float groundDistance = 0.3f;
+    public float groundDistance = 1f;
     public float pickupRange = 2f;
 
     private Rigidbody rb; // Rigidbody component
@@ -37,7 +37,17 @@ public class AstronautController : MonoBehaviour
     void Update()
     {
         // Check if the astronaut is on the ground
-        isGrounded = Physics.Raycast(transform.position, -Vector3.up, groundDistance);
+        isGrounded = Physics.Raycast(transform.position, -Vector3.up * 0.1f, groundDistance);
+
+        // Check ground status and log
+        if (!isGrounded)
+        {
+            Debug.Log("Not Grounded");
+        }
+        else
+        {
+            Debug.Log("Grounded");
+        }
 
         // Check if the Escape key was pressed
         if (Input.GetKeyDown(KeyCode.Escape))

@@ -12,19 +12,21 @@ public class PythonConnector : MonoBehaviour
     private TcpClient client;
     private Stream stream;
     private byte[] data;
-    
-    SerialPort serialPort = new SerialPort("COM8", 9600);
+    private bool dataSent = false;
+    SerialPort serialPort;
     void Start()
     {
         // Ensure the main thread dispatcher is initialized on the main thread
         UnityMainThreadDispatcher.Instance().Enqueue(() => {});
-        
         ThreadStart ts = new ThreadStart(ConnectToServer);
         Thread t = new Thread(ts);
         t.Start();
 
-        if (!serialPort.IsOpen) {
+        serialPort = new SerialPort("COM8", 9600);
+        try {
             serialPort.Open();
+        } catch (Exception ex) {
+            Debug.LogError("Failed to open serial port: " + ex.Message);
         }
     }
     
@@ -78,16 +80,53 @@ public class PythonConnector : MonoBehaviour
     }
 
     void Update() {
-        if (serialPort.IsOpen && serialPort.BytesToRead > 0) {
-            string data = serialPort.ReadLine();
-            Debug.Log("Received data: " + data);
-            ProcessReceivedData(data);
+        // if (serialPort.IsOpen && serialPort.BytesToRead > 0) {
+        //     string data = serialPort.ReadLine();
+        //     Debug.Log("Received data: " + data);
+        //     ProcessReceivedData(data);
+        // }
+
+        GameObject astronaut = GameObject.Find("Stylized Astronaut");
+        GameObject rock = GameObject.Find("Rocks_00");
+        float detectionRange = 5f; // Detection range in units
+        // Ensure both objects are assigned
+        if (astronaut != null && rock != null) {
+            float distance = Vector3.Distance(astronaut.transform.position, rock.transform.position);
+            if (distance < detectionRange && !dataSent) {
+                Debug.Log("Distance within range, sending commands.");
+                try {
+                    serialPort.WriteLine("playSound\n");
+                    serialPort.WriteLine("lightOn\n");
+                    dataSent = true;
+                } catch (Exception ex) {
+                    Debug.LogError("Failed to write to serial port: " + ex.Message);
+                }
+            } else if (distance > detectionRange && dataSent) {
+                Debug.Log("Distance out of range, sending commands.");
+                try {
+                    serialPort.WriteLine("stopSound\n");
+                    serialPort.WriteLine("lightOff\n");
+                    dataSent = false;
+                } catch (Exception ex) {
+                    Debug.LogError("Failed to write to serial port: " + ex.Message);
+                }
+            }
+        }
+    }
+
+    public void SendCommand(string command)
+    {
+        if (serialPort != null && serialPort.IsOpen) {
+            serialPort.WriteLine(command + "\n"); // Ensure the command is terminated with a newline character
+        } else {
+            Debug.LogError("Serial port not open");
         }
     }
 
     void OnDestroy() {
         if (serialPort != null && serialPort.IsOpen) {
             serialPort.Close();
+            Debug.Log("Serial port closed.");
         }
     }
 

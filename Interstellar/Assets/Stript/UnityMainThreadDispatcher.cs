@@ -26,7 +26,7 @@ public class UnityMainThreadDispatcher : MonoBehaviour
     {
         if (instance == null)
         {
-            instance = FindFirstObjectByType<UnityMainThreadDispatcher>() ?? new GameObject("UnityMainThreadDispatcher").AddComponent<UnityMainThreadDispatcher>();
+            instance = FindObjectOfType<UnityMainThreadDispatcher>() ?? new GameObject("UnityMainThreadDispatcher").AddComponent<UnityMainThreadDispatcher>();
         }
         return instance;
     }
@@ -40,7 +40,14 @@ public class UnityMainThreadDispatcher : MonoBehaviour
     {
         while (queue.TryDequeue(out var action))
         {
-            action?.Invoke();
+            try
+            {
+                action?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("An error occurred while executing an action on the main thread: " + ex);
+            }
         }
     }
 }
